@@ -1,0 +1,6 @@
+@csharp_net_swagger_carchat_api_HostAddress = http://localhost:5164
+
+GET {{csharp_net_swagger_carchat_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
