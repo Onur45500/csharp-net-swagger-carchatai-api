@@ -4,7 +4,7 @@
 
 CarChat API est une application C# .NET qui permet de rechercher des véhicules sur Leboncoin et d'interagir avec les résultats. Cette API offre une interface simple pour effectuer des recherches avancées de véhicules en utilisant divers critères tels que la marque, le modèle, le prix, le type de carburant, le nombre de portes, le nombre de places, etc.
 
-L'API utilise des techniques de web scraping pour récupérer les données de Leboncoin et les présenter dans un format structuré et facilement exploitable.
+L'API utilise des techniques de web scraping pour récupérer les données de Leboncoin et les présenter dans un format structuré et facilement exploitable. Elle intègre également l'IA Gemini 2.0 Flash via OpenRouter pour analyser et enrichir les résultats de recherche.
 
 ## Fonctionnalités principales
 
@@ -15,12 +15,14 @@ L'API utilise des techniques de web scraping pour récupérer les données de Le
 - Analyse des descriptions pour extraire des informations supplémentaires
 - Comparaison de véhicules pour faciliter la prise de décision
 - Filtrage avancé des résultats de recherche
+- Analyse intelligente des annonces grâce à l'IA Gemini 2.0 Flash
 
 ## Prérequis
 
 - .NET 9.0 ou supérieur
 - Visual Studio 2022 ou un autre IDE compatible avec .NET
 - Accès à Internet pour les requêtes vers Leboncoin
+- Un compte OpenRouter pour accéder à l'API Gemini 2.0 Flash
 
 ## Installation
 
@@ -35,7 +37,18 @@ L'API utilise des techniques de web scraping pour récupérer les données de Le
    dotnet restore
    ```
 
-3. Compilez le projet :
+3. Configurez le fichier d'environnement :
+   - Copiez le fichier `.env.example` vers un nouveau fichier nommé `.env`
+   ```
+   cp .env.example .env
+   ```
+   - Obtenez un token API OpenRouter :
+     1. Créez un compte sur [OpenRouter](https://openrouter.ai/)
+     2. Accédez à votre tableau de bord et générez une clé API
+     3. Copiez cette clé API
+   - Modifiez le fichier `.env` et remplacez la valeur `OPENROUTER_API_KEY` par votre clé API
+
+4. Compilez le projet :
    ```
    dotnet build
    ```
@@ -54,6 +67,17 @@ Pour accéder à la documentation Swagger de l'API :
 ```
 https://localhost:5001/swagger
 ```
+
+## Intégration avec Gemini 2.0 Flash
+
+Cette API utilise le modèle d'IA Gemini 2.0 Flash de Google via OpenRouter pour :
+
+- Analyser les descriptions des véhicules et en extraire des informations pertinentes
+- Générer des résumés des annonces
+- Détecter les anomalies potentielles dans les annonces
+- Fournir des recommandations personnalisées basées sur les préférences de l'utilisateur
+
+Le modèle Gemini 2.0 Flash a été choisi pour sa rapidité d'exécution et sa capacité à comprendre le contexte des annonces automobiles.
 
 ## Endpoints de l'API
 
@@ -220,6 +244,34 @@ Fournit des recommandations de véhicules similaires à un véhicule donné.
 **Réponse :**
 Liste des véhicules recommandés, triés par pertinence.
 
+### 7. Analyse par IA
+
+```
+POST /api/chat/analyze
+```
+
+Utilise Gemini 2.0 Flash pour analyser une annonce et fournir des insights.
+
+**Paramètres :**
+```json
+{
+  "articleId": "string"  // ID de l'article à analyser
+}
+```
+
+**Réponse :**
+```json
+{
+  "analysis": {
+    "summary": "string",           // Résumé de l'annonce
+    "highlights": ["string"],      // Points forts du véhicule
+    "concerns": ["string"],        // Points d'attention potentiels
+    "marketComparison": "string",  // Comparaison avec le marché
+    "suggestedQuestions": ["string"] // Questions à poser au vendeur
+  }
+}
+```
+
 ## Utilisation de l'API
 
 ### Exemple de requête pour rechercher des véhicules
@@ -274,6 +326,17 @@ Content-Type: application/json
 }
 ```
 
+### Exemple d'analyse par IA
+
+```http
+POST /api/chat/analyze
+Content-Type: application/json
+
+{
+  "articleId": "12345678"
+}
+```
+
 ## Déploiement
 
 Pour publier l'application pour un déploiement en production :
@@ -286,4 +349,4 @@ Les fichiers publiés seront disponibles dans le dossier `bin/Release/net9.0/pub
 
 ## Licence
 
-Ce projet est sous licence MIT.
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
